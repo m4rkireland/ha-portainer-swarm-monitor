@@ -1,0 +1,70 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Portainer",
+        "description": "Use a read-only Portainer API token.",
+        "data": {
+          "url": "URL",
+          "api_token": "API token",
+          "verify_ssl": "Verify SSL certificate",
+          "scan_interval": "Polling interval (seconds)"
+        }
+      },
+      "endpoint": {
+        "title": "Select Docker Swarm endpoint",
+        "data": {"endpoint_id": "Endpoint"}
+      },
+      "reauth_confirm": {
+        "title": "Update Portainer authentication",
+        "data": {"api_token": "API token"}
+      },
+      "reconfigure": {
+        "title": "Reconfigure Portainer connection",
+        "data": {
+          "url": "URL",
+          "api_token": "API token",
+          "verify_ssl": "Verify SSL certificate"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to connect to Portainer",
+      "invalid_auth": "The Portainer API token was rejected",
+      "invalid_url": "Enter an HTTP or HTTPS URL without embedded credentials, query parameters, or fragments",
+      "not_swarm_endpoint": "The selected endpoint is not an active Docker Swarm manager",
+      "no_swarm_endpoints": "No active Portainer endpoints were found",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "This Portainer Swarm endpoint is already configured",
+      "reauth_successful": "Authentication was updated successfully",
+      "reconfigure_successful": "Connection settings were updated successfully"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Portainer Swarm options",
+        "data": {"scan_interval": "Polling interval (seconds)"}
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {"swarm_health": {"name": "Swarm health"}},
+    "sensor": {
+      "nodes_ready": {"name": "Nodes ready"},
+      "managers_reachable": {"name": "Managers reachable"},
+      "services_healthy": {"name": "Services healthy"},
+      "running_replicas": {"name": "Running replicas"},
+      "under_replicated_services": {"name": "Under-replicated services"},
+      "failed_tasks": {"name": "Failed tasks"},
+      "rejected_tasks": {"name": "Rejected tasks"},
+      "unhealthy_containers": {"name": "Unhealthy containers"},
+      "stacks_unhealthy": {"name": "Unhealthy stacks"},
+      "docker_version": {"name": "Docker version"},
+      "portainer_version": {"name": "Portainer version"},
+      "last_successful_poll": {"name": "Last successful poll"}
+    }
+  }
+}
