@@ -1,9 +1,11 @@
 import hashlib
 from unittest.mock import AsyncMock, patch
 
+import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_API_TOKEN, CONF_URL, CONF_VERIFY_SSL
 from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.helpers.selector import TextSelector
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.portainer_swarm.const import (
@@ -12,6 +14,52 @@ from custom_components.portainer_swarm.const import (
     CONF_SCAN_INTERVAL,
     DOMAIN,
 )
+
+
+def _assert_secure_token_field(result) -> None:
+    """Assert the API token is password-masked and is not pre-filled."""
+    marker, validator = next(
+        (marker, validator)
+        for marker, validator in result["data_schema"].schema.items()
+        if marker.schema == CONF_API_TOKEN
+    )
+    assert isinstance(validator, TextSelector)
+    assert validator.config["type"] == "password"
+    assert marker.default is vol.UNDEFINED
+
+
+async def test_api_token_fields_are_password_masked_and_not_prefilled(hass) -> None:
+    user_result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": config_entries.SOURCE_USER}
+    )
+    _assert_secure_token_field(user_result)
+
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        title="primary",
+        unique_id="instance#1",
+        data={
+            CONF_URL: "https://portainer.example",
+            CONF_API_TOKEN: "stored-secret",
+            CONF_VERIFY_SSL: True,
+            CONF_ENDPOINT_ID: 1,
+            CONF_ENDPOINT_NAME: "primary",
+        },
+    )
+    entry.add_to_hass(hass)
+
+    reauth_result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_REAUTH, "entry_id": entry.entry_id},
+        data=entry.data,
+    )
+    _assert_secure_token_field(reauth_result)
+
+    reconfigure_result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_RECONFIGURE, "entry_id": entry.entry_id},
+    )
+    _assert_secure_token_field(reconfigure_result)
 
 
 async def test_user_flow_selects_swarm_endpoint(hass) -> None:

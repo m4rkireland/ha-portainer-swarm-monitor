@@ -23,14 +23,11 @@ Unlike Home Assistant's built-in Portainer integration, this integration uses Sw
 
 ## Installation with HACS
 
-Until this repository is accepted into the HACS default catalogue:
-
 1. Open HACS in Home Assistant.
-2. Select **Custom repositories**.
-3. Add `https://github.com/m4rkireland/ha-portainer-swarm-monitor` as an **Integration**.
-4. Install **Portainer Swarm Monitor**.
-5. Restart Home Assistant.
-6. Go to **Settings → Devices & services → Add integration → Portainer Swarm Monitor**.
+2. Search for **Portainer Swarm Monitor**.
+3. Select **Download**.
+4. Restart Home Assistant.
+5. Go to **Settings → Devices & services → Add integration → Portainer Swarm Monitor**.
 
 ## Configuration
 

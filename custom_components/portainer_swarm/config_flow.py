@@ -10,6 +10,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_API_TOKEN, CONF_URL, CONF_VERIFY_SSL
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.selector import TextSelector, TextSelectorConfig, TextSelectorType
 
 from .client import (
     PortainerAuthenticationError,
@@ -25,10 +26,12 @@ from .const import (
     DOMAIN,
 )
 
+API_TOKEN_SELECTOR = TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD))
+
 USER_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_URL): str,
-        vol.Required(CONF_API_TOKEN): str,
+        vol.Required(CONF_API_TOKEN): API_TOKEN_SELECTOR,
         vol.Optional(CONF_VERIFY_SSL, default=True): bool,
         vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): vol.All(
             vol.Coerce(int), vol.Range(min=30, max=900)
@@ -185,7 +188,7 @@ class PortainerSwarmConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "no_swarm_endpoints"
         return self.async_show_form(
             step_id="reauth_confirm",
-            data_schema=vol.Schema({vol.Required(CONF_API_TOKEN): str}),
+            data_schema=vol.Schema({vol.Required(CONF_API_TOKEN): API_TOKEN_SELECTOR}),
             errors=errors,
         )
 
@@ -258,7 +261,7 @@ class PortainerSwarmConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_URL, default=entry.data[CONF_URL]): str,
-                    vol.Required(CONF_API_TOKEN, default=entry.data[CONF_API_TOKEN]): str,
+                    vol.Required(CONF_API_TOKEN): API_TOKEN_SELECTOR,
                     vol.Required(CONF_VERIFY_SSL, default=entry.data[CONF_VERIFY_SSL]): bool,
                 }
             ),
